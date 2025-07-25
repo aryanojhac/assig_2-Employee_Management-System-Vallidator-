@@ -163,7 +163,7 @@ func validatePAN(f1 validator.FieldLevel) bool {
 // Custom function to validate phone number
 func validatePhone(f1 validator.FieldLevel) bool {
 	phone := f1.Field().String()
-	// Allow 10-digit phone number
+	// Allowing 10-digit phone number
 	if len(phone) == 10 {
 		for _, ch := range phone {
 			if ch < '0' || ch > '9' {
@@ -173,7 +173,6 @@ func validatePhone(f1 validator.FieldLevel) bool {
 		return true
 	}
 
-	// Allow +91 and other country code formats like +1xxxxxxxxxx
 	if len(phone) == 13 && phone[0] == '+' {
 		for i := 1; i < 13; i++ {
 			if phone[i] < '0' || phone[i] > '9' {
