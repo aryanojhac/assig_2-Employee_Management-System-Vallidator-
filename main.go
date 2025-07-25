@@ -13,12 +13,12 @@ var validate = validator.New()
 
 // Making the Structure of Employee having attibutes as Name, Age and Salary
 type Employee struct {
-	Name         string  `validate:"required"`
-	Age          uint    `validate:"required,gte=18,lte=100"`
-	Salary       float64 `validate:"required,gt=0"`
-	Email        string  `validate:"required,email"`
-	PAN_Number   string  `validate:"required,len=10,pan"`
-	Phone_Number string  `validate:"required,len=13,phone"`
+	Name        string  `validate:"required"`
+	Age         uint    `validate:"required,gte=18,lte=100"`
+	Salary      float64 `validate:"required,gt=0"`
+	Email       string  `validate:"required,email"`
+	PANNumber   string  `validate:"required,len=10,PANNumber"`
+	PhoneNumber string  `validate:"required,PhoneNumber"`
 }
 
 // Making the structure of Department having attributes as Dept Name and Employee struct
@@ -28,9 +28,9 @@ type Department struct {
 }
 
 // Method to calculte the Vaerage Salary of the Employee
-func (d Department) averageSalary() (float64, error) {
+func (d *Department) averageSalary() (float64, error) {
 	if len(d.Employees) == 0 {
-		return 0, errors.New("the department is empty so cannot calculate the salary")
+		return 0, errors.New("The department is empty so cannot calculate the salary")
 	}
 
 	total := 0.0
@@ -45,7 +45,7 @@ func (d Department) averageSalary() (float64, error) {
 func (d Department) listAll() {
 	for _, emp := range d.Employees { // Iterating on all employees to display the details
 		fmt.Printf("%-10s | %2d |  ₹%.2f | %s | %s | %s \n",
-			emp.Name, emp.Age, emp.Salary, emp.Email, emp.PAN_Number, emp.Phone_Number)
+			emp.Name, emp.Age, emp.Salary, emp.Email, emp.PANNumber, emp.PhoneNumber)
 	}
 }
 
@@ -55,50 +55,50 @@ func (d *Department) addEmployeeByUser() error {
 	var age uint
 	var salary float64
 	var email string
-	var pan_number string
-	var phone_number string
+	var pannumber string
+	var phonenumber string
 
 	fmt.Print("Enter the Name of Employee: ")
 	if _, err := fmt.Scanln(&name); err != nil {
-		return fmt.Errorf("invalid age: %w", err)
+		return fmt.Errorf("The employee name must conatin only Alphabets. %w", err)
 	}
 	fmt.Print("Enter the Age of Employee: ")
 	if _, err := fmt.Scanln(&age); err != nil {
-		return fmt.Errorf("invalid age: %w", err)
+		return fmt.Errorf("Age must be between 18 to 100 years. %w", err)
 	}
 
 	fmt.Print("Enter the Salary of Employee: ")
 	if _, err := fmt.Scanln(&salary); err != nil {
-		return fmt.Errorf("invalid salary: %w", err)
+		return fmt.Errorf("The Salary must be numeric and more than Rs0. %w", err)
 	}
 
 	fmt.Print("Enter the Email of Employee: ")
 	if _, err := fmt.Scanln(&email); err != nil {
-		return fmt.Errorf("invalid email: %w", err)
+		return fmt.Errorf("The Email must contain @ and .com. %w", err)
 	}
 
 	fmt.Print("Enter the PAN Number (CapitalCase) of Employee: ")
-	if _, err := fmt.Scanln(&pan_number); err != nil {
-		return fmt.Errorf("invalid PAN Number: %w", err)
+	if _, err := fmt.Scanln(&pannumber); err != nil {
+		return fmt.Errorf("PAN number is invalid, it must be Alphanumeric %w", err)
 	}
 
 	fmt.Print("Enter the Phone Number of Employee: ")
-	if _, err := fmt.Scanln(&phone_number); err != nil {
-		return fmt.Errorf("invalid Phone Number: %w", err)
+	if _, err := fmt.Scanln(&phonenumber); err != nil {
+		return fmt.Errorf("The Phone Number must  %w", err)
 	}
 
 	emp := Employee{Name: name,
-		Age:          age,
-		Salary:       salary,
-		Email:        email,
-		PAN_Number:   pan_number,
-		Phone_Number: phone_number,
+		Age:         age,
+		Salary:      salary,
+		Email:       email,
+		PANNumber:   pannumber,
+		PhoneNumber: phonenumber,
 	}
 
 	if err := validate.Struct(emp); err != nil {
 		if ve, ok := err.(validator.ValidationErrors); ok {
 			for _, e := range ve {
-				fmt.Printf("Validation error: Field '%s' failed on '%s'\n", e.Field(), e.Tag())
+				fmt.Printf("Please give an Valid Input", e)
 			}
 			return errors.New("validation failed")
 		}
@@ -107,34 +107,34 @@ func (d *Department) addEmployeeByUser() error {
 	}
 
 	d.Employees = append(d.Employees, emp)
-	fmt.Println("Employee successfully added.")
+	fmt.Println("Congratulations! Employee successfully added.")
 	return nil
 }
 
 // Method to remove an Employee
-func (d Department) removeEmployee(name string) (Department, error) {
+func (d *Department) removeEmployee(name string) error {
 	for i, emp := range d.Employees {
 		if emp.Name == name {
 			d.Employees = append(d.Employees[:i], d.Employees[i+1:]...)
 			fmt.Printf("Employee '%s' has been removed.\n", name)
-			return d, nil
+			return nil
 		}
 	}
-	return d, fmt.Errorf("Employee with name %s does not exist", name)
+	return fmt.Errorf("Employee with name %s does not exist", name)
 }
 
 // Method to give a raise to an Employee
-func (d Department) toGiveRaise(name string, amount float64) (Department, error) {
+func (d *Department) toGiveRaise(name string, amount float64) error {
 	fmt.Println("After Upraisal")
 	for i, emp := range d.Employees {
 		if emp.Name == name {
 			emp.Salary += amount
 			d.Employees[i] = emp
 			fmt.Println("The Raise is given to", emp.Name)
-			return d, nil
+			return nil
 		}
 	}
-	return d, fmt.Errorf("the salary of %s has been raised", name)
+	return fmt.Errorf("the salary of %s has been raised", name)
 }
 
 // Custom function for validating the PAN_Number
@@ -144,21 +144,17 @@ func validatePAN(f1 validator.FieldLevel) bool {
 	if len(pan) != 10 {
 		return false
 	}
-	for index := 0; index < 5; index++ {
+	for index := 0; index < 5; index++ { //Checking 1st 5 entries are Alphabets or not
 		if pan[index] < 'A' || pan[index] > 'Z' {
-			fmt.Println("First")
 			return false
-
 		}
 	}
-	for index := 5; index < 9; index++ {
+	for index := 5; index < 9; index++ { //Checking middle 4 entries are are numbers or not
 		if pan[index] < '0' || pan[index] > '9' {
-			fmt.Println("2nd")
 			return false
 		}
 	}
-	if pan[9] < 'A' || pan[9] > 'Z' {
-		fmt.Println("last")
+	if pan[9] < 'A' || pan[9] > 'Z' { //Checking last entry is Alphabets or not
 		return false
 	}
 	return true
@@ -167,25 +163,26 @@ func validatePAN(f1 validator.FieldLevel) bool {
 // Custom function to validate phone number
 func validatePhone(f1 validator.FieldLevel) bool {
 	phone := f1.Field().String()
+	// Allow 10-digit phone number
 	if len(phone) == 10 {
-		for _, ph := range phone {
-			if ph < '0' || ph > '9' {
+		for _, ch := range phone {
+			if ch < '0' || ch > '9' {
 				return false
 			}
 		}
 		return true
-	} else if len(phone) == 13 {
-		if phone[0] != '+' || phone[1] != '9' || phone[2] != '1' {
-			return false
-		}
-		for index := 3; index < 13; index++ {
-			if phone[index] < '0' || phone[index] > '9' {
+	}
+
+	// Allow +91 and other country code formats like +1xxxxxxxxxx
+	if len(phone) == 13 && phone[0] == '+' {
+		for i := 1; i < 13; i++ {
+			if phone[i] < '0' || phone[i] > '9' {
 				return false
 			}
 		}
+		return true
 	}
-	fmt.Println("Enter phone number including the country code (+1,+91,etc)")
-	return true
+	return false
 }
 func main() {
 
@@ -193,8 +190,8 @@ func main() {
 	validate = validator.New() //New validator instance
 
 	// Registering the custom validator functions
-	validate.RegisterValidation("pan", validatePAN)
-	validate.RegisterValidation("phone", validatePhone)
+	validate.RegisterValidation("PANNumber", validatePAN)
+	validate.RegisterValidation("PhoneNumber", validatePhone)
 
 	dept := Department{
 		DeptName: "IT",
@@ -219,18 +216,21 @@ func main() {
 		case 1: // Listing all the Employees
 			fmt.Println("The first list of Employees:")
 			dept.listAll()
+
 		case 2: // Printing average salary of Employees
 			avgSalary, err := dept.averageSalary()
 			if err != nil {
-				fmt.Println("Error:", err)
+				fmt.Println("Cannot calculate average salary.", err)
 			} else {
 				fmt.Printf("\nAverage salary in %s: ₹%.2f\n", dept.DeptName, avgSalary)
 			}
+
 		case 3: // Create and add a new employee from user input
 			err := dept.addEmployeeByUser()
 			if err != nil && err.Error() != "no new employee to add" {
-				fmt.Println("Error adding employee:", err)
+				fmt.Println("Failed to add employee. Please try again.", err)
 			}
+
 		case 4: // Giving Raise to the employee
 			var name string
 			var raise float64
@@ -240,25 +240,22 @@ func main() {
 			fmt.Print("Enter raise amount: ")
 			fmt.Scanln(&raise)
 
-			updatedDept, err := dept.toGiveRaise(name, raise)
+			err := dept.toGiveRaise(name, raise)
 			if err != nil {
-				fmt.Println("Error:", err)
-			} else {
-				dept = updatedDept
+				fmt.Println("The employee whom you want to give raise is not in the organization.", err)
 			}
+
 		case 5: // To remove a employee
 			var name string
 			fmt.Print("Enter employee name to remove: ")
 			fmt.Scanln(&name)
-
-			updatedDept, err := dept.removeEmployee(name)
+			err := dept.removeEmployee(name)
 			if err != nil {
-				fmt.Println("Error:", err)
-			} else {
-				dept = updatedDept
+				fmt.Println("The employee you want to remove is not in the organization.", err)
 			}
+
 		case 6: // Exit the code
-			fmt.Println("Exiting program. Goodbye!")
+			fmt.Println("Exiting program. Thank You!")
 			return
 
 		default:
