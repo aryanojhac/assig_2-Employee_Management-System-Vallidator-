@@ -60,21 +60,21 @@ func (d *Department) addEmployeeByUser() error {
 
 	fmt.Print("Enter the Name of Employee: ")
 	if _, err := fmt.Scanln(&name); err != nil {
-		return fmt.Errorf("The employee name must conatin only Alphabets. %w", err)
+		return fmt.Errorf("the employee name must conatin only Alphabets. %w", err)
 	}
 	fmt.Print("Enter the Age of Employee: ")
 	if _, err := fmt.Scanln(&age); err != nil {
-		return fmt.Errorf("Age must be between 18 to 100 years. %w", err)
+		return fmt.Errorf("age must be between 18 to 100 years. %w", err)
 	}
 
 	fmt.Print("Enter the Salary of Employee: ")
 	if _, err := fmt.Scanln(&salary); err != nil {
-		return fmt.Errorf("The Salary must be numeric and more than Rs0. %w", err)
+		return fmt.Errorf("the Salary must be numeric and more than Rs0. %w", err)
 	}
 
 	fmt.Print("Enter the Email of Employee: ")
 	if _, err := fmt.Scanln(&email); err != nil {
-		return fmt.Errorf("The Email must contain @ and .com. %w", err)
+		return fmt.Errorf("the Email must contain @ and .com. %w", err)
 	}
 
 	fmt.Print("Enter the PAN Number (CapitalCase) of Employee: ")
@@ -84,7 +84,7 @@ func (d *Department) addEmployeeByUser() error {
 
 	fmt.Print("Enter the Phone Number of Employee: ")
 	if _, err := fmt.Scanln(&phonenumber); err != nil {
-		return fmt.Errorf("The Phone Number must  %w", err)
+		return fmt.Errorf("the Phone Number must be valid %w", err)
 	}
 
 	emp := Employee{Name: name,
